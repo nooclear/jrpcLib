@@ -69,7 +69,10 @@ func (dest *Destination) Call(jrpc *JRPC) (*http.Response, error) {
 				if res, err := dest.Client.Do(req); err != nil {
 					return nil, err
 				} else {
-					return res, nil
+					defer func() {
+						err = res.Body.Close()
+					}()
+					return res, err
 				}
 			}
 		}
