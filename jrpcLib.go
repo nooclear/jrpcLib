@@ -47,12 +47,7 @@ func (jrpc *JRPC) Wrapper() ([]byte, error) {
 	}
 }
 
-// Call makes an http call using the 'Destination' struct and the 'JRPC' struct
-// The 'dest' data contains an http client that can be used with 'github.com/icholy/digest' to create an
-// http client with digest auth if that is needed otherwise it just carries a client - it also carries all
-// information regarding the destination to make the call to such as 'protocol'://'ip':'port'/'path' as
-// well as the http method to use for the http request.
-// This returns an http.Response that needs to be handled by the user to derive information such as status codes
+// Call sends an HTTP request to the destination using JRPC parameters and returns the response or an error.
 func (dest *Destination) Call(jrpc *JRPC) (*http.Response, error) {
 	if dest.Method != "" && dest.Protocol != "" && dest.IP != "" {
 		if reqBody, err := jrpc.Wrapper(); err != nil {
@@ -69,10 +64,7 @@ func (dest *Destination) Call(jrpc *JRPC) (*http.Response, error) {
 				if res, err := dest.Client.Do(req); err != nil {
 					return nil, err
 				} else {
-					defer func() {
-						err = res.Body.Close()
-					}()
-					return res, err
+					return res, nil
 				}
 			}
 		}
